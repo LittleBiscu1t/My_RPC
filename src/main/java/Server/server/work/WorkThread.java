@@ -15,6 +15,15 @@ import java.net.Socket;
 
 
 @AllArgsConstructor
+
+/**
+ * Runnable 接口的作用
+ * Runnable 是 Java 中用于定义 线程任务 的核心接口，作用如下：
+ *
+ * 封装任务逻辑：Runnable 允许将任务逻辑封装在 run() 方法中，使任务可以在多个线程中执行。
+ * 支持并发执行：当 Runnable 实现类被传递给 Thread 或 ExecutorService 时，可以并发执行多个实例，提高性能。
+ * 避免直接继承 Thread：Java 不支持多继承，而 Runnable 作为接口，使类仍然可以继承其他类，同时定义自己的业务逻辑。
+ */
 public class WorkThread implements Runnable{
     private Socket socket;
     private ServiceProvider serviceProvide;

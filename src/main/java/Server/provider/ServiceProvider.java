@@ -6,7 +6,7 @@ import java.util.Map;
 
 //本地服务存放器
 public class  ServiceProvider {
-    //集合中存放服务的实例
+    //集合中存放服务的实例,key对应接口名称，value对应服务实例
     private Map<String,Object> interfaceProvider;
 
     public ServiceProvider(){
