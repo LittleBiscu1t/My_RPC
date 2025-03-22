@@ -2,6 +2,8 @@ package Client.rpcClient.impl;
 
 import Client.netty.initializer.NettyClientInitializer;
 import Client.rpcClient.RpcClient;
+import Client.serviceCenter.ServiceCenter;
+import Client.serviceCenter.ZKServiceCenter;
 import common.Message.RpcRequest;
 import common.Message.RpcResponse;
 import io.netty.bootstrap.Bootstrap;
@@ -12,14 +14,16 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 
+import java.net.InetSocketAddress;
+
 public class NettyRpcClient implements RpcClient {
     private String host;
     private int port;
     private static final Bootstrap bootstrap;
     private static final EventLoopGroup eventLoopGroup;
-    public NettyRpcClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    private ServiceCenter serviceCenter;
+    public NettyRpcClient() {
+        this.serviceCenter = new ZKServiceCenter();
     }
     static {
         bootstrap = new Bootstrap();
@@ -29,6 +33,11 @@ public class NettyRpcClient implements RpcClient {
 
     @Override
     public RpcResponse sendRequest(RpcRequest request) {
+        //从注册中心获取host,post
+        InetSocketAddress address = serviceCenter.serviceDiscovery(request.getInterfaceName());
+        String host = address.getHostName();
+        int port = address.getPort();
+        System.out.println("客户端准备调用接口 [" + request.getInterfaceName() + "]，服务地址为: " + address);
         try {
             // Netty中所有操作如 `connect()`、`writeAndFlush()`都是默认异步的
             // 但可以通过sync()改为同步
