@@ -13,6 +13,8 @@ public class RpcResponse implements Serializable {
     private String message;
     //具体数据
     private Object data;
+    //传输数据的类型
+    private Class<?> dataType;
     //构造成功信息
     public static RpcResponse sussess(Object data){
         return RpcResponse.builder().code(200).data(data).build();
