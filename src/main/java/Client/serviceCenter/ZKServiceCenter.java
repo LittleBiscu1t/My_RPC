@@ -8,7 +8,9 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import java.net.InetSocketAddress;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ZKServiceCenter implements ServiceCenter{
     // curator 提供的zookeeper客户端
@@ -17,6 +19,8 @@ public class ZKServiceCenter implements ServiceCenter{
     private static final String ROOT_PATH = "MyRPC";
     // 服务缓存
     private serviceCache cache;
+    // 记录已监听服务
+    private final Set<String> watchedServices = new HashSet<>();
 
     //负责zookeeper客户端的初始化，并与zookeeper服务端进行连接
     public ZKServiceCenter() throws InterruptedException {
@@ -32,25 +36,47 @@ public class ZKServiceCenter implements ServiceCenter{
         System.out.println("zookeeper 连接成功");
         //初始化本地缓存
         cache=new serviceCache();
-        //加入zookeeper事件监听器
-        watchZK watcher=new watchZK(client,cache);
-        //监听启动
-        watcher.watchToUpdate(ROOT_PATH);
+//        //加入zookeeper事件监听器
+//        watchZK watcher=new watchZK(client,cache);
+//        //监听启动
+//        watcher.watchToUpdate(ROOT_PATH);
     }
     //根据服务名（接口名）返回地址
     @Override
     public InetSocketAddress serviceDiscovery(String serviceName) {
         try {
-            //先从本地缓存找
+            // 先从缓存查
             List<String> serviceList = cache.getServcieFromCache(serviceName);
-            //如果找不到，就从zookeeper找
-            if(serviceList == null) {
-                //获取指定 serviceName(服务名称)路径下的所有子节点
+
+            // 如果缓存没有，说明是第一次请求该服务
+            if (serviceList == null || serviceList.isEmpty()) {
+                // 拉取 zk 中的子节点（地址列表）
                 serviceList = client.getChildren().forPath("/" + serviceName);
+
+                // 加入缓存
+                for (String address : serviceList) {
+                    cache.addServiceToCache(serviceName, address);
+                }
+
+                // 懒监听（首次使用该服务时注册监听）
+                synchronized (watchedServices) {
+                    if (!watchedServices.contains(serviceName)) {
+                        watchZK watcher = new watchZK(client, cache);
+                        watcher.watchToUpdate("/" + serviceName);
+                        watchedServices.add(serviceName);
+                        System.out.println("已监听服务: " + serviceName);
+                    }
+                }
             }
-            // 这里默认用的第一个，后面加负载均衡
-            String string = serviceList.get(0);
-            return parseAddress(string);
+
+            if (serviceList.isEmpty()) {
+                System.err.println("未发现服务实例: " + serviceName);
+                return null;
+            }
+
+            // 默认选第一个，后续可加负载均衡策略
+            return parseAddress(serviceList.get(0));
+
         } catch (Exception e) {
             e.printStackTrace();
         }

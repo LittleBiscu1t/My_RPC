@@ -13,7 +13,7 @@ public class MyDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) throws Exception {
         //1.读取消息类型
         short messageType = in.readShort();
-        System.out.println("解码器读取 messageType = " + messageType);
+//        System.out.println("解码器读取 messageType = " + messageType);
         // 现在还只支持request与response请求
         if(messageType != MessageType.REQUEST.getCode() &&
                 messageType != MessageType.RESPONSE.getCode()){

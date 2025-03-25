@@ -24,11 +24,11 @@ public class MyEncoder extends MessageToByteEncoder {
         //1.写入消息类型
         if(msg instanceof RpcRequest){
             out.writeShort(MessageType.REQUEST.getCode());
-            System.out.println("编码器写出 messageType = Request");
+//            System.out.println("编码器写出 messageType = Request");
         }
         else if(msg instanceof RpcResponse){
             out.writeShort(MessageType.RESPONSE.getCode());
-            System.out.println("编码器写出 messageType = Response");
+//            System.out.println("编码器写出 messageType = Response");
         }
         //2.写入序列化方式
         out.writeShort(serializer.getType());
