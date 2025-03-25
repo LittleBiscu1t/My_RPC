@@ -12,15 +12,19 @@ import java.lang.reflect.Method;
 
 @AllArgsConstructor
 public class NettyRPCServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
-
     private ServiceProvider serviceProvider;
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-        RpcResponse response = getResponse((request));
+        System.out.println("服务端收到请求：" + request.getMethodName());
+        RpcResponse response = getResponse(request);
         ctx.writeAndFlush(response);
         ctx.close();
     }
-
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        ctx.close();
+    }
     private RpcResponse getResponse(RpcRequest rpcRequest){
         //得到服务名
         String interfaceName=rpcRequest.getInterfaceName();

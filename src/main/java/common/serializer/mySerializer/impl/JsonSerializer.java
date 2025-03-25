@@ -1,18 +1,19 @@
 package common.serializer.mySerializer.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import common.Message.RpcRequest;
 import common.Message.RpcResponse;
 import common.serializer.mySerializer.Serializer;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
-import java.io.*;
-
+/**
+ * @author wxx
+ * @version 1.0
+ * @create 2024/6/2 22:31
+ */
 public class JsonSerializer implements Serializer {
-
     @Override
     public byte[] serialize(Object obj) {
-        //使用fastjson提供的方法，将任意对象转换为JSON格式的字符数组
         byte[] bytes = JSONObject.toJSONBytes(obj);
         return bytes;
     }
@@ -64,6 +65,7 @@ public class JsonSerializer implements Serializer {
         return obj;
     }
 
+    //1 代表json序列化方式
     @Override
     public int getType() {
         return 1;
