@@ -5,7 +5,7 @@ import common.service.UserService;
 import common.pojo.User;
 
 public class TestClient {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 //        ClientProxy clientProxy=new ClientProxy("127.0.0.1",9999, 0);
         ClientProxy clientProxy=new ClientProxy();
         UserService proxy=clientProxy.getProxy(UserService.class);
