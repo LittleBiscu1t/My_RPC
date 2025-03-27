@@ -25,7 +25,7 @@ public class  ServiceProvider {
     }
 
     //本地和zookeeper注册服务
-    public void provideServiceInterface(Object service){
+    public void provideServiceInterface(Object service, boolean canRetry) {
         String serviceName=service.getClass().getName();
         Class<?>[] interfaceName=service.getClass().getInterfaces();
 
@@ -33,7 +33,7 @@ public class  ServiceProvider {
             //本地的映射表
             interfaceProvider.put(clazz.getName(),service);
             //在zookeeper注册服务
-            serviceRegister.register(clazz.getName(), new InetSocketAddress(host,port));
+            serviceRegister.register(clazz.getName(), new InetSocketAddress(host,port), canRetry);
             System.out.println("服务："+serviceName+" 已经注册到Zookeeper");
         }
 

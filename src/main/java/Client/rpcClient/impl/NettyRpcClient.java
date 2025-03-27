@@ -22,8 +22,8 @@ public class NettyRpcClient implements RpcClient {
     private static final Bootstrap bootstrap;
     private static final EventLoopGroup eventLoopGroup;
     private ServiceCenter serviceCenter;
-    public NettyRpcClient() throws InterruptedException {
-        this.serviceCenter = new ZKServiceCenter();
+    public NettyRpcClient(ServiceCenter serviceCenter) throws InterruptedException {
+        this.serviceCenter = serviceCenter;
     }
     static {
         bootstrap = new Bootstrap();
