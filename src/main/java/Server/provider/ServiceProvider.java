@@ -1,7 +1,9 @@
 package Server.provider;
 
-import Server.server.serviceRegister.ServiceRegister;
-import Server.server.serviceRegister.impl.ZKServiceRegister;
+import Server.rateLimit.RateLimit;
+import Server.rateLimit.provider.RateLimitProvider;
+import Server.serviceRegister.ServiceRegister;
+import Server.serviceRegister.impl.ZKServiceRegister;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -16,12 +18,15 @@ public class  ServiceProvider {
     private String host;
     //注册服务类
     private ServiceRegister serviceRegister;
+    //限流器
+    private RateLimitProvider rateLimitProvider;
 
     public ServiceProvider(String host, int port) {
         this.host = host;
         this.port = port;
-        interfaceProvider = new HashMap<>();
+        this.interfaceProvider = new HashMap<>();
         this.serviceRegister = new ZKServiceRegister();
+        this.rateLimitProvider = new RateLimitProvider();
     }
 
     //本地和zookeeper注册服务
@@ -42,4 +47,7 @@ public class  ServiceProvider {
     public Object getService(String interfaceName){
         return interfaceProvider.get(interfaceName);
     }
+
+    //获取限流器
+    public RateLimitProvider getRateLimitProvider() {return rateLimitProvider;}
 }

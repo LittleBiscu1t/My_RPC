@@ -1,6 +1,6 @@
-package Server.server.serviceRegister.impl;
+package Server.serviceRegister.impl;
 
-import Server.server.serviceRegister.ServiceRegister;
+import Server.serviceRegister.ServiceRegister;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
