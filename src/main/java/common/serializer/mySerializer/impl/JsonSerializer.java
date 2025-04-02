@@ -38,12 +38,13 @@ public class JsonSerializer implements Serializer {
                     param = JSONObject 类型，表示 User 对象
                     param.getClass() = JSONObject.class
                      */
-                    if (!paramsType.isAssignableFrom(request.getParams()[i].getClass())){
-                        //如果不一致，就行进行类型转换
-                        objects[i] = JSONObject.toJavaObject((JSONObject) request.getParams()[i],request.getParamsType()[i]);
-                    }else{
-                        //如果一致就直接赋给objects[i]
-                        objects[i] = request.getParams()[i];
+                    Object param = request.getParams()[i];
+                    if (param == null) {
+                        objects[i] = null;
+                    } else if (!paramsType.isAssignableFrom(param.getClass())) {
+                        objects[i] = JSONObject.toJavaObject((JSONObject) param, paramsType);
+                    } else {
+                        objects[i] = param;
                     }
                 }
                 request.setParams(objects);
@@ -51,10 +52,10 @@ public class JsonSerializer implements Serializer {
                 break;
             case 1:
                 RpcResponse response = JSON.parseObject(bytes, RpcResponse.class);
+                Object data = response.getData();
                 Class<?> dataType = response.getDataType();
-                //判断转化后的response对象中的data的类型是否正确
-                if(! dataType.isAssignableFrom(response.getData().getClass())){
-                    response.setData(JSONObject.toJavaObject((JSONObject) response.getData(),dataType));
+                if (data != null && dataType != null && !dataType.isAssignableFrom(data.getClass())) {
+                    response.setData(JSONObject.toJavaObject((JSONObject) data, dataType));
                 }
                 obj = response;
                 break;
